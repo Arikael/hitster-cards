@@ -1,0 +1,23 @@
+{
+  "name": "hitster-cards",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "npx tsc",
+    "dev": "esrun ./src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "esrun": "^3.2.26",
+    "typescript": "^5.3.3"
+  }
+}
