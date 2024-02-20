@@ -1,0 +1,9 @@
+CREATE TABLE Songs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(100) NOT NULL,
+    artist VARCHAR(100) NOT NULL,
+    year INTEGER NOT NULL,
+    playUrl VARCHAR(255) NOT NULL,
+    createdAt DATETIME NOT NULL,
+    UNIQUE(title, artist, year)
+)

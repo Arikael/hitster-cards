@@ -1,11 +1,13 @@
-import {HitParadeScraper} from './scrapers/hitParadeScraper';
+import {scrape} from "./scrapers/scraper";
+import { Command } from 'commander';
+const program = new Command();
 
+program.command('scrape')
+    .description('gets the songs from the sources')
+    .action(async() => scrape('swisscharts.com'))
 
 async function main(): Promise<void> {
-    const scraper = new HitParadeScraper()
-    const songs = await scraper.getSongs({year: '1968', url: '/charts/number-1/1968'})
-    const song = await scraper.getSongDetail(songs[0].playUrl!)
-    console.log(song)
+    const options = program.parseAsync(process.argv)
 }
 
 main()

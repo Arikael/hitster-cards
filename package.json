@@ -14,9 +14,14 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^1.6.7",
-    "cheerio": "^1.0.0-rc.12"
+    "chalk": "^5.3.0",
+    "cheerio": "^1.0.0-rc.12",
+    "commander": "^12.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@types/node": "^20.11.19",
     "esrun": "^3.2.26",
     "typescript": "^5.3.3"
   }

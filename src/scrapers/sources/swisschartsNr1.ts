@@ -1,12 +1,14 @@
-import {ScrapedSong, ScrapedYear, Scraper, Song} from "./scraper";
+import {ScrapedSong, ScrapedYear, ScraperSource, Song} from "../scraperSource";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import {exists} from "node:fs";
 
-export class HitParadeScraper implements Scraper {
+export class SwisschartsNr1 implements ScraperSource {
+    get name() { return 'swisscharts.com' }
     private baseUrl = 'http://www.swisscharts.com'
 
     async getYears(): Promise<ScrapedYear[]> {
-        const result = await axios.get(this.baseUrl + 'charts/number-1/1968')
+        const result = await axios.get(this.baseUrl + '/charts/number-1/1968')
         const $ = cheerio.load(result.data)
         return $('a[href^="/charts/number-1"]').get().map((el) => {
             const url = $(el).attr('href') || ''
@@ -40,7 +42,7 @@ export class HitParadeScraper implements Scraper {
         const title = artistTitleEl.find('div').contents().last().text()
 
         return {
-            playUrl: detailUrl,
+            playUrl: this.baseUrl + detailUrl,
             artist,
             title,
             year: +year
