@@ -7,12 +7,11 @@ const availableScrapers: ScraperSource[] = [
     new SwisschartsNr1()
 ]
 
-const maxSongsToInsert = 20
+const maxSongsToInsertPerBatch = 20
 
-export const scrape = async (source: string) => {
+export const scrape = async (source: string, detailUrl?: string) => {
+
     console.log(chalk.green.bold('getting songs from ' + source))
-    let currentSongBulkCount = 0
-    const songsToInsert: Song[] = []
     const db = new SongDatabase()
     await db.initDatabase()
     const scraperSource = availableScrapers.find(x => x.name === source)
@@ -21,21 +20,32 @@ export const scrape = async (source: string) => {
         return
     }
 
-    const years =  await scraperSource.getYears()
+    if (detailUrl) {
+        await scrapeSingleDetail(detailUrl, scraperSource, db)
+    }
+    else {
+        await fullScrape(scraperSource, db)
+    }
+}
 
-    if(years.length === 0) {
+const fullScrape = async(scraperSource: ScraperSource, db: SongDatabase) => {
+    let currentSongBulkCount = 0
+    const songsToInsert: Song[] = []
+    const years = await scraperSource.getYears()
+
+    if (years.length === 0) {
         console.error(chalk.red('unable to get any years'))
     }
+    console.log(JSON.stringify(years))
+    console.info(chalk.blue(`got years ${years[0].year} - ${years[years.length - 1].year}`))
 
-    console.info(chalk.blue(`got years ${years[0]} - ${years[years.length -1 ]}`))
-
-    for (let year of years) {
-        const songsTitles = await scraperSource.getSongs(year)
+    for (let scrapedYear of years) {
+        const songsTitles = await scraperSource.getSongs(scrapedYear)
         const songsToGetDetail = songsTitles.filter(x => {
             return (<ScrapedSong>x).scrapePlayUrl && (<ScrapedSong>x).playUrl
         })
 
-        console.log(chalk.blue(`-> got ${songsTitles.length} songs`))
+        console.log(chalk.blue(`${scrapedYear.year} -> got ${songsTitles.length} songs`))
 
         for (let i = 0; i < songsTitles.length; i++) {
             const currentSong = songsToGetDetail[i]
@@ -52,12 +62,18 @@ export const scrape = async (source: string) => {
             songsToInsert.push(songToInsert)
             currentSongBulkCount++
 
-            if (currentSongBulkCount >= maxSongsToInsert || i + 1 === songsToGetDetail.length) {
+            if (currentSongBulkCount >= maxSongsToInsertPerBatch || i + 1 === songsToGetDetail.length) {
                 await db.addSongs(songsToInsert)
                 console.info(chalk.green(`inserted ${songsToInsert.length} songs`))
                 currentSongBulkCount = 0
+                songsToInsert.length = 0
                 break
             }
         }
     }
+}
+
+const scrapeSingleDetail = async (detailUrl: string, scraperSource: ScraperSource, db: SongDatabase) => {
+    const song = await scraperSource.getSongDetail(detailUrl)
+    await db.addSongs([song])
 }

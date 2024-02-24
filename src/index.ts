@@ -4,10 +4,11 @@ const program = new Command();
 
 program.command('scrape')
     .description('gets the songs from the sources')
-    .action(async() => scrape('swisscharts.com'))
+    .option('-s --single <url>', 'only scrape a single detail url', '')
+    .action(async(options) => scrape('swisscharts.com', options.single))
 
 async function main(): Promise<void> {
-    const options = program.parseAsync(process.argv)
+    await program.parseAsync(process.argv)
 }
 
 main()
