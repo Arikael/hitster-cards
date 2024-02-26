@@ -53,9 +53,8 @@ export class SwisschartsNr1 implements ScraperSource {
             playUrl: this.baseUrl + detailUrl,
             artist,
             title,
-            year: +year
+            year: +year,
+            source: this.name
         }
-
     }
-
 }

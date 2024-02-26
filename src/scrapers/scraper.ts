@@ -10,7 +10,6 @@ const availableScrapers: ScraperSource[] = [
 const maxSongsToInsertPerBatch = 20
 
 export const scrape = async (source: string, detailUrl?: string) => {
-
     console.log(chalk.green.bold('getting songs from ' + source))
     const db = new SongDatabase()
     await db.initDatabase()

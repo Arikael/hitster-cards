@@ -14,7 +14,8 @@ export interface Song {
     year: number
     artist: string
     title: string
-    playUrl: string
+    playUrl: string,
+    source: string
 }
 
 export interface ScrapedSong extends Partial<Song> {
