@@ -1,7 +1,8 @@
-import {ScraperSource, ScrapedSong, Song} from "./scraperSource";
-import {SwisschartsNr1} from "./sources/swisschartsNr1";
-import {SongDatabase} from "../database";
-import chalk from "chalk";
+import {ScraperSource, ScrapedSong} from './scraperSource';
+import {SwisschartsNr1} from './sources/swisschartsNr1';
+import {SongDatabase} from '../database';
+import chalk from 'chalk';
+import {Song} from "../song";
 
 const availableScrapers: ScraperSource[] = [
     new SwisschartsNr1()

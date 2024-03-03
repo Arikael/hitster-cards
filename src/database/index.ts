@@ -1,8 +1,8 @@
-import {Database, open} from "sqlite"
+import {Database, open} from 'sqlite'
 import sqlite3 from 'sqlite3'
 import * as path from 'path'
-import {Song} from "../scrapers/scraperSource";
-import {toUtf8} from "../utils";
+import {toUtf8} from '../utils';
+import {Song} from '../song';
 
 export class SongDatabase {
     private _db!: Database
@@ -38,5 +38,50 @@ export class SongDatabase {
         sql += valueSql.join(', ')
         await this.db.exec(toUtf8(sql))
     }
+
+    async getSongs(filter: SongFilter): Promise<Song[]> {
+        let sql = 'SELECT * FROM Songs'
+        let params = undefined
+
+        if(filter.source || filter.yearTo || filter.yearFrom) {
+            sql += ' WHERE '
+            params = {
+                source: filter.source,
+                yearFrom: filter.yearFrom,
+                yearTo: filter.yearTo
+            }
+        }
+
+        const filters: string[] = []
+
+        if(filter.source) {
+            filters.push('source = :source')
+        }
+
+        if(filter.yearFrom) {
+            filters.push('year >= :yearFrom')
+        }
+
+        if(filter.yearTo) {
+            filters.push('year <= :yearTo')
+        }
+
+        sql += filters.join(' AND ')
+
+        return (await this.db.all(sql, params)).map(x => {
+            return {
+                year: +x.year,
+                artist: x.artist,
+                title: x.title,
+                playUrl: x.playUrl,
+                source: x.source
+            } as Song
+        })
+    }
 }
 
+export interface SongFilter {
+    source?: string,
+    yearFrom?: number,
+    yearTo?: number
+}

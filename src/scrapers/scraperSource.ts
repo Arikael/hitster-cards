@@ -1,3 +1,5 @@
+import {Song} from '../song';
+
 export interface ScraperSource {
     get name(): string
     getYears(): Promise<ScrapedYear[]>
@@ -8,14 +10,6 @@ export interface ScraperSource {
 export interface ScrapedYear {
     url: string,
     year: string
-}
-
-export interface Song {
-    year: number
-    artist: string
-    title: string
-    playUrl: string,
-    source: string
 }
 
 export interface ScrapedSong extends Partial<Song> {
