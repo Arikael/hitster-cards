@@ -17,6 +17,7 @@ export class PdfCreator {
     private lineHeight = 10
     private startX = 0
     private startY = 0
+    private cardsPerRow = 0
 
     private doc!: jsPDF
 
@@ -28,9 +29,9 @@ export class PdfCreator {
     }
 
     private createCardData(songs: Song[]): PdfSongData {
-        const cardsPerRow = Math.floor(this.pageWidth / this.cellWidth)
+        this.cardsPerRow = Math.floor(this.pageWidth / this.cellWidth)
         const rowsPerPage = Math.floor(this.pageHeight / this.cellHeight)
-        const totalCardsPerPage = cardsPerRow * rowsPerPage
+        const totalCardsPerPage = this.cardsPerRow * rowsPerPage
         let data: Song[][][] = []
         data.push([])
         data[0].push([])
@@ -41,7 +42,7 @@ export class PdfCreator {
             data[data.length - 1][dataRow].push(song)
             totalPerPage++
 
-            if (totalPerPage % cardsPerRow === 0) {
+            if (totalPerPage % this.cardsPerRow === 0) {
                 if (totalPerPage < totalCardsPerPage) {
                     data[data.length - 1].push([])
 
@@ -92,23 +93,28 @@ export class PdfCreator {
     }
 
     private async drawPage(songData: PdfSong[][], type: 'text' | 'qrcode'): Promise<void> {
-        console.log(songData.length)
+        const isReverse = type === 'qrcode'
+
         for (let row of songData) {
-            const rowToDraw = type === 'qrcode' ? row.reverse() : row
 
-            for (let song of rowToDraw) {
-                console.log(song.title)
+            if(isReverse) {
+                this.startX += (this.cardsPerRow - 1) * this.cellWidth
+            }
 
-                if (type === 'qrcode') {
+            for (let song of row) {
+                if (isReverse) {
                     await this.drawQrCode(song)
                 } else {
                     await this.drawCard(song)
                 }
 
-                this.startX += this.cellWidth
-                console.log(this.startX)
+                if(isReverse) {
+                    this.startX -= this.cellWidth
+                }
+                else {
+                    this.startX += this.cellWidth
+                }
             }
-            console.log('break')
 
             this.startY += this.cellHeight
             this.startX = this.pageMargin
@@ -128,9 +134,7 @@ export class PdfCreator {
         this.doc.setFontSize(32)
         this.doc.text(item.year.toString(), x, y + this.cellHeight / 2 - this.lineHeight / 2, options);
         this.setFontSize(item.artist)
-        this.doc.text(item.artist, x, y + this.cellHeight - this.cellPadding * 2, options);
-
-        return Promise.resolve()
+        this.doc.text(item.artist, x, this.startY + this.cellHeight - this.cellPadding / 2, options);
     }
 
     private setFontSize(text: string, maxLengthBeforeReduce: number = 30) {
