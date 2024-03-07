@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "npx tsc",
-    "dev": "esrun ./src/index.ts",
+    "print": "esrun ./src/index.ts -- print",
+    "scrape": "esrun ./src/index.ts -- scrape",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
