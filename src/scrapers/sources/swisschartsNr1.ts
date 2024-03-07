@@ -51,7 +51,7 @@ export class SwisschartsNr1 implements ScraperSource {
         const title = artistTitleEl.find('div').contents().last().text()
 
         return {
-            playUrl: this.baseUrl + detailUrl,
+            playUrl: detailUrl,
             artist,
             title,
             year: +year,
