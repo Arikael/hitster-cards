@@ -18,7 +18,8 @@ export class PdfCreator {
     private startX = 0
     private startY = 0
     private cardsPerRow = 0
-
+    private maxTextLength = 30
+    private cardTextRegex = new RegExp(/[\s\S]{1,30}(?!\S)/g) // use maxTextLength
     private doc!: jsPDF
 
     constructor() {
@@ -97,7 +98,7 @@ export class PdfCreator {
 
         for (let row of songData) {
 
-            if(isReverse) {
+            if (isReverse) {
                 this.startX += (this.cardsPerRow - 1) * this.cellWidth
             }
 
@@ -108,10 +109,9 @@ export class PdfCreator {
                     await this.drawCard(song)
                 }
 
-                if(isReverse) {
+                if (isReverse) {
                     this.startX -= this.cellWidth
-                }
-                else {
+                } else {
                     this.startX += this.cellWidth
                 }
             }
@@ -129,21 +129,24 @@ export class PdfCreator {
         const x = this.startX + this.cellWidth / 2
         const y = this.startY + this.cellPadding
 
-        this.setFontSize(item.title)
-        this.doc.text(item.title, x, y, options);
+        this.doc.setFontSize(12)
+        const title = this.splitCardText(item.title)
+
+        this.doc.text(title, x, y, options);
         this.doc.setFontSize(32)
         this.doc.text(item.year.toString(), x, y + this.cellHeight / 2 - this.lineHeight / 2, options);
-        this.setFontSize(item.artist)
-        this.doc.text(item.artist, x, this.startY + this.cellHeight - this.cellPadding / 2, options);
+        this.doc.setFontSize(12)
+
+        const artist = this.splitCardText(item.artist)
+        const artistLines = artist.split('\n').length
+
+        this.doc.text(artist, x, this.startY + this.cellHeight - (this.cellPadding / 2 * artistLines), options);
     }
 
-    private setFontSize(text: string, maxLengthBeforeReduce: number = 30) {
-        if (text.length > maxLengthBeforeReduce) {
-            this.doc.setFontSize(11)
-        }
-        else {
-            this.doc.setFontSize(11)
-        }
+    private splitCardText(input: string): string {
+        return input.length > this.maxTextLength
+            ? input.replace(this.cardTextRegex, '$&\n')
+            : input
     }
 
     private async drawQrCode(song: PdfSong) {
