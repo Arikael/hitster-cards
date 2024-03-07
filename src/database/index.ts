@@ -33,9 +33,11 @@ export class SongDatabase {
     }
 
     async addSongs(songs: Song[]) {
-        let sql = `INSERT OR IGNORE INTO Songs (artist, title, year, playUrl, createdAt) VALUES`
-        const valueSql = songs.map(song => `("${song.artist}", "${toUtf8(song.title)}", "${song.year}", "${song.playUrl}", DATE(\'now\'))`)
+        let sql = `INSERT INTO Songs (artist, title, year, playUrl, createdAt, source) VALUES`
+        const valueSql = songs.map(song => `("${song.artist}", "${toUtf8(song.title)}", "${song.year}", 
+            "${song.playUrl}", DATE(\'now\'), "${song.source}")`)
         sql += valueSql.join(', ')
+        sql += ' ON CONFLICT(title, artist, year) DO NOTHING'
         await this.db.exec(toUtf8(sql))
     }
 
