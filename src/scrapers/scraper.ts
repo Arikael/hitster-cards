@@ -2,7 +2,7 @@ import {ScraperSource, ScrapedSong} from './scraperSource';
 import {SwisschartsNr1} from './sources/swisschartsNr1';
 import {SongDatabase} from '../database';
 import chalk from 'chalk';
-import {Song} from "../song";
+import {Song} from '../song';
 
 const availableScrapers: ScraperSource[] = [
     new SwisschartsNr1()
@@ -10,9 +10,9 @@ const availableScrapers: ScraperSource[] = [
 
 const maxSongsToInsertPerBatch = 20
 
-export const scrape = async (source: string, detailUrl?: string) => {
+export const scrape = async (databaseName: string, source: string, detailUrl?: string) => {
     console.info(chalk.green.bold('getting songs from ' + source))
-    const db = new SongDatabase()
+    const db = new SongDatabase(databaseName)
     await db.initDatabase()
     const scraperSource = availableScrapers.find(x => x.name === source)
 

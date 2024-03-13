@@ -1,13 +1,10 @@
 import {SongDatabase, SongFilter} from '../database';
-import QRCode from 'qrcode'
-import {CellConfig, jsPDF, TextOptionsLight} from 'jspdf';
 import * as fs from 'node:fs';
-import {Song} from "../scrapers/scraperSource";
-import {start} from "node:repl";
-import {PdfCreator} from "./pdf";
+import {PdfCreator} from './pdf';
+import {Song} from '../song';
 
-export const print = async (filter: SongFilter): Promise<void> => {
-    const db = new SongDatabase()
+export const print = async (databaseName: string, filter: SongFilter): Promise<void> => {
+    const db = new SongDatabase(databaseName)
     await db.initDatabase()
     const songs = (await db.getSongs(filter)).map(x => {
         return {

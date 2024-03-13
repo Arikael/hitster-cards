@@ -1,7 +1,7 @@
 import {ScrapedSong, ScrapedYear, ScraperSource} from '../scraperSource';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import {Song} from "../../song";
+import {Song} from '../../song';
 
 export class SwisschartsNr1 implements ScraperSource {
     get name() {

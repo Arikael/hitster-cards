@@ -104,7 +104,6 @@ export class PdfCreator {
             }
 
             for (let song of row) {
-
                 if (isReverse) {
                     await this.drawQrCode(song)
                 } else {

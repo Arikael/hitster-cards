@@ -6,6 +6,11 @@ import {Song} from '../song';
 
 export class SongDatabase {
     private _db!: Database
+    private readonly _databaseName: string
+
+    constructor(databaseName: string) {
+        this._databaseName = databaseName
+    }
 
     get db(): Database {
         if (!this._db) {
@@ -19,7 +24,7 @@ export class SongDatabase {
 
     initDatabase = async () => {
         this._db = await open({
-            filename: path.join(process.cwd(), 'data', 'songs.db'),
+            filename: path.join(process.cwd(), 'data', this._databaseName),
             driver: sqlite3.Database
         })
 
@@ -45,7 +50,7 @@ export class SongDatabase {
         let sql = 'SELECT * FROM Songs'
         let params = undefined
 
-        if(filter.source || filter.yearTo || filter.yearFrom) {
+        if (filter.source || filter.yearTo || filter.yearFrom) {
             sql += ' WHERE '
             params = {
                 source: filter.source,
@@ -56,15 +61,15 @@ export class SongDatabase {
 
         const filters: string[] = []
 
-        if(filter.source) {
+        if (filter.source) {
             filters.push('source = :source')
         }
 
-        if(filter.yearFrom) {
+        if (filter.yearFrom) {
             filters.push('year >= :yearFrom')
         }
 
-        if(filter.yearTo) {
+        if (filter.yearTo) {
             filters.push('year <= :yearTo')
         }
 
