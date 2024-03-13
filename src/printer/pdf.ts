@@ -20,8 +20,8 @@ export class PdfCreator {
     private startY = 0
     private cardsPerRow = 0
     private rowsPerPage = 0
-    private maxTextLength = 30
-    private cardTextRegex = new RegExp(/[\s\S]{1,30}(?!\S)/g) // use maxTextLength
+    private maxTextLength = 28
+    private cardTextRegex = new RegExp(/[\s\S]{1,28}(?!\S)/g) // use maxTextLength
     private doc!: jsPDF
 
     constructor() {
