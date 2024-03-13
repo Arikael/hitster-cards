@@ -11,13 +11,15 @@ export class PdfCreator {
     private pageWidth = 210
     private pageHeight = 297
     private pageMargin = 5
-    private cellPadding = 5
+    private cellVerticalPadding = 5
     private cellWidth = 65
     private cellHeight = 65
     private lineHeight = 10
+    private maxRemainingWidth = 0
     private startX = 0
     private startY = 0
     private cardsPerRow = 0
+    private rowsPerPage = 0
     private maxTextLength = 30
     private cardTextRegex = new RegExp(/[\s\S]{1,30}(?!\S)/g) // use maxTextLength
     private doc!: jsPDF
@@ -27,12 +29,13 @@ export class PdfCreator {
         this.startY = this.pageMargin
         this.pageWidth -= this.pageMargin * 2
         this.pageHeight -= this.pageMargin * 2
+        this.cardsPerRow = Math.floor(this.pageWidth / this.cellWidth)
+        this.rowsPerPage = Math.floor(this.pageHeight / this.cellHeight)
+        this.maxRemainingWidth = this.pageWidth - this.cardsPerRow * this.cellWidth
     }
 
     private createCardData(songs: Song[]): PdfSongData {
-        this.cardsPerRow = Math.floor(this.pageWidth / this.cellWidth)
-        const rowsPerPage = Math.floor(this.pageHeight / this.cellHeight)
-        const totalCardsPerPage = this.cardsPerRow * rowsPerPage
+        const totalCardsPerPage = this.cardsPerRow * this.rowsPerPage
         let data: Song[][][] = []
         data.push([])
         data[0].push([])
@@ -57,7 +60,6 @@ export class PdfCreator {
                 data.push([])
                 data[data.length - 1].push([])
             }
-
         }
 
         return data
@@ -97,12 +99,12 @@ export class PdfCreator {
         const isReverse = type === 'qrcode'
 
         for (let row of songData) {
-
             if (isReverse) {
-                this.startX += (this.cardsPerRow - 1) * this.cellWidth
+                this.startX += (this.cardsPerRow - 1) * this.cellWidth + this.maxRemainingWidth
             }
 
             for (let song of row) {
+
                 if (isReverse) {
                     await this.drawQrCode(song)
                 } else {
@@ -116,8 +118,8 @@ export class PdfCreator {
                 }
             }
 
-            this.startY += this.cellHeight
             this.startX = this.pageMargin
+            this.startY += this.cellHeight
         }
     }
 
@@ -127,7 +129,7 @@ export class PdfCreator {
             align: 'center'
         }
         const x = this.startX + this.cellWidth / 2
-        const y = this.startY + this.cellPadding
+        const y = this.startY + this.cellVerticalPadding
 
         this.doc.setFontSize(12)
         const title = this.splitCardText(item.title)
@@ -140,7 +142,7 @@ export class PdfCreator {
         const artist = this.splitCardText(item.artist)
         const artistLines = artist.split('\n').length
 
-        this.doc.text(artist, x, this.startY + this.cellHeight - (this.cellPadding / 2 * artistLines), options);
+        this.doc.text(artist, x, this.startY + this.cellHeight - (this.cellVerticalPadding / 2 * artistLines), options);
     }
 
     private splitCardText(input: string): string {
