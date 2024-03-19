@@ -160,18 +160,28 @@ export class PdfCreator {
 
         this.doc.text(artist, x, this.startY + this.cellHeight - (this.cellVerticalPadding / 2 * artistLines), options);
 
+        // TODO fix this really ugly code...
         if (this.startX + this.cellWidth * 2 >= this.pageWidth) {
-            this.doc.line(this.startX + this.cellWidth * 2, this.startY, this.pageWidth, this.startY)
+            const x = this.startX + this.cellWidth * 2
+
+            this.doc.line(x, this.startY, this.pageWidth, this.startY)
 
             if(this.startY === this.pageMargin) {
-                this.doc.line(this.startX + this.cellWidth * 2, 0, this.startX + this.cellWidth * 2, this.startY)
+                this.doc.line(x, 0, x, this.startY)
+            }
+
+            if(this.startY + this.cellHeight * 2 >= this.pageHeight) {
+                this.doc.line(x, this.startY + this.cellHeight, x, this.pageHeight)
+                this.doc.line(x, this.startY + this.cellHeight, this.pageWidth, this.startY + this.cellHeight)
             }
         }
 
         if(this.startY + this.cellHeight * 2 >= this.pageHeight) {
             this.doc.line(0, this.startY + this.cellHeight, this.pageMargin, this.startY + this.cellHeight)
 
-
+            if(this.startY + this.cellHeight * 2 >= this.pageHeight) {
+                this.doc.line(this.pageMargin, this.startY + this.cellHeight, this.pageMargin, this.pageHeight)
+            }
         }
     }
 
