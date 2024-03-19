@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import {PdfCreator} from './pdf';
 import {Song} from '../song';
 
-export const print = async (databaseName: string, filter: SongFilter): Promise<void> => {
+export const print = async (databaseName: string, printBorders: boolean, filter: SongFilter): Promise<void> => {
     const db = new SongDatabase(databaseName)
     await db.initDatabase()
     const songs = (await db.getSongs(filter)).map(x => {
@@ -20,5 +20,5 @@ export const print = async (databaseName: string, filter: SongFilter): Promise<v
     }
 
     const pdf = new PdfCreator()
-    pdf.createPdf(songs)
+    pdf.createPdf(songs, printBorders)
 }
