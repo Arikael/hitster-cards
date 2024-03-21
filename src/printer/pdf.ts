@@ -11,7 +11,7 @@ export class PdfCreator {
     private pageWidth = 210
     private pageHeight = 297
     private pageMargin = 5
-    private cellVerticalPadding = 5
+    private cellVerticalPadding = 7.5
     private cellWidth = 65
     private cellHeight = 65
     private lineHeight = 10
@@ -151,14 +151,14 @@ export class PdfCreator {
         const title = this.splitCardText(item.title)
 
         this.doc.text(title, x, y, options);
-        this.doc.setFontSize(32)
+        this.doc.setFontSize(40)
         this.doc.text(item.year.toString(), x, y + this.cellHeight / 2 - this.lineHeight / 2, options);
         this.doc.setFontSize(12)
 
         const artist = this.splitCardText(item.artist)
         const artistLines = artist.split('\n').length
-
-        this.doc.text(artist, x, this.startY + this.cellHeight - (this.cellVerticalPadding / 2 * artistLines), options);
+        const lineOffset = artistLines === 1 ? 2.4 : -1.2
+        this.doc.text(artist, x, this.startY + this.cellHeight - this.cellVerticalPadding + lineOffset, options);
 
         // TODO fix this really ugly code...
         if (this.startX + this.cellWidth * 2 >= this.pageWidth) {
